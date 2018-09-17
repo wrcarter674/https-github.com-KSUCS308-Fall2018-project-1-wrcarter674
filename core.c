@@ -35,10 +35,24 @@ int is_number_convertable(const char * string) {
 }
 
 char encrypt_character(char source, int key) {
-    return source;
+   if(source){
+	char encrypted;
+	encrypted = source+key;
+	return encrypted;
+   }
+	return FALSE
 }
 
 void encrypt_string(char * message, int key, int step) {
+	if(message){
+		char encrypted[strlen(message)];
+		for(int i = 0; message[0] != '\0'; i++){
+		encrypted[i] = encrypt_character(message[i], key+(step*i));
+		}
+	printf(encrypted);
+	}
+	
+
 }
 
 char decrypt_character(char source, int key) {
