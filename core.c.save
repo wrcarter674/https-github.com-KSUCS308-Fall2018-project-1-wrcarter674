@@ -30,13 +30,14 @@ int is_number_convertable(const char * string) {
         }
         s++;
     }
+    
     return TRUE;
 }
 
 char encrypt_character(char source, int key) {
    if(source){
 	char encrypted;
-	if(source+key >= 'Z'){
+	if(source+key >= CHARACTER_COUNT){
 		encrypted = source+key-CHARACTER_COUNT;
 		return encrypted;
 	}
@@ -50,35 +51,21 @@ char encrypt_character(char source, int key) {
 
 void encrypt_string(char * message, int key, int step) {
 	if(message){
-		char encrypted[strlen(message)];
+		char encrypted[strlen(*message)];
 		for(int i = 0; message[i] != '\0'; i++){
 			encrypted[i] = encrypt_character(message[i], key+(step*i));
 		}
-	printf("%s", encrypted);
+	printf(encrypted);
 	}
+	
 
 }
 
 char decrypt_character(char source, int key) {
-	if((source-key)< 'A'){
-		source = CHARACTER_COUNT-(abs(source-key));
-	}
-	else{
-		source = source-key;
-	}
-	 return source;
+    return source;
 }
 
 void decrypt_string(char * message, int key, int step) {
-	int count=0;
-	for(count; message[count] != '/0'; count++);
-	char decrypted[count];
-	int length = count;
-	for(count; count>=0; count--){
-		decrypted[length-count]= decrypt_character(message[count], (step+key*count));
-	}
-	printf("%s", decrypted);
-
 }
 
 void print_usage() {
@@ -88,22 +75,7 @@ void print_usage() {
 }
 
 int core_main(int argc, const char * argv[]) {
-	if(strncmp("encrypt", argv[1], 7) == 0 ){
-	//	char * c_pointer = argv[1];
-		encrypt_string( argv[1], (int) argv[3], (int) argv[4]);
-	}
-	else if(strncmp("decrypt", argv[1], 7) == 0){
-	//	char * d_pointer = argv[1];
-		decrypt_string( argv[1],(int) argv[3],(int) argv[4]);
-	}
-	else{
-		printf("Unknown command error: %s\n ", argv[1]);
-	}
-	printf("%s\n", argv[1]);
-	printf("%s\n", argv[2]);
-	printf("%s\n", argv[3]);
-	printf("%s\n", argv[4]);
-
-//    print_usage();
+   
+ print_usage();
     return 0;
 }
