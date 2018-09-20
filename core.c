@@ -30,54 +30,52 @@ int is_number_convertable(const char * string) {
         }
         s++;
     }
-    return TRUE;
+     return TRUE;
 }
 
 char encrypt_character(char source, int key) {
-   if(source){
-	char encrypted;
-	if(source+key >= 'Z'){
-		encrypted = source+key-CHARACTER_COUNT;
-		return encrypted;
+	if(key <= 0){
+		return source;
 	}
-	else{
-		encrypted = source+key;
-		return encrypted;
+	source = source + (key % CHARACTER_COUNT);
+	if(source > LAST_CHARACTER){
+		source = (source-LAST_CHARACTER)+FIRST_CHARACTER -1;
 	}
-   }
-	return FALSE
+	return source;
 }
 
 void encrypt_string(char * message, int key, int step) {
-	if(message){
-		char encrypted[strlen(message)];
-		for(int i = 0; message[i] != '\0'; i++){
-			encrypted[i] = encrypt_character(message[i], key+(step*i));
+	int count =0;
+	while(*message != '\0'){
+		if(*message != ' '){
+			*message = encrypt_character(*message, (key+(step*count)));
 		}
-	printf("%s", encrypted);
+		count++;
+		message++;
 	}
-
 }
 
 char decrypt_character(char source, int key) {
-	if((source-key)< 'A'){
-		source = CHARACTER_COUNT-(abs(source-key));
+	if(key <=0){
+		return source;
 	}
-	else{
-		source = source-key;
+	source = source - (key % CHARACTER_COUNT);
+	if(source < FIRST_CHARACTER){
+		source = LAST_CHARACTER-(FIRST_CHARACTER-source)+1;
 	}
+
 	 return source;
 }
 
 void decrypt_string(char * message, int key, int step) {
-	int count=0;
-	for(count; message[count] != '/0'; count++);
-	char decrypted[count];
-	int length = count;
-	for(count; count>=0; count--){
-		decrypted[length-count]= decrypt_character(message[count], (step+key*count));
+	int count =0;
+	while(*message != '\0'){
+		if(*message != ' '){
+			*message = decrypt_character(*message, (key+(step*count)));
+		}
+		count++;
+		message++;
 	}
-	printf("%s", decrypted);
 
 }
 
@@ -87,23 +85,53 @@ void print_usage() {
     printf("\t./main decrypt message key key_offset\n");
 }
 
-int core_main(int argc, const char * argv[]) {
-	if(strncmp("encrypt", argv[1], 7) == 0 ){
-	//	char * c_pointer = argv[1];
-		encrypt_string( argv[1], (int) argv[3], (int) argv[4]);
+int isValid(const char * value){
+	while(*value != '\0'){
+		if(!(*value >= '0') || !(*value <= '9')){
+			return FALSE;
+		}
+		value++;
 	}
-	else if(strncmp("decrypt", argv[1], 7) == 0){
-	//	char * d_pointer = argv[1];
-		decrypt_string( argv[1],(int) argv[3],(int) argv[4]);
+	return TRUE;
+}
+
+int core_main(int argc, const char * argv[]){
+	if(argc < 5){
+		printf("Missing arguements\n");
+		return 1;
+	}
+
+	if(!isValid(argv[3])){
+		printf("Key must be an integer.");
+		return 1;
+	}
+
+	if(!isValid(argv[4])){
+		printf("Key offset must be an integer\n");
+		return 1;
+	}
+	if(strlen(argv[2]) > 100){
+		printf("Max message length is 100 characters\n");
+		return 1;
+	}
+
+	char op[100];
+	strcpy(op, argv[1]);
+	char message[100];
+	strcpy(message, argv[2]);
+	
+	int key = atoi(argv[3]);
+	int step = atoi(argv[4]);
+	if(strncmp(op, "encrypt", 7) ==0){
+		encrypt_string(message, key, step);
+	}else if(strncmp(op, "decrypt", 7) ==0){
+		decrypt_string(message, key, step);
 	}
 	else{
-		printf("Unknown command error: %s\n ", argv[1]);
+		printf("Unknown command: %s\n", op);
+		return 1;
 	}
-	printf("%s\n", argv[1]);
-	printf("%s\n", argv[2]);
-	printf("%s\n", argv[3]);
-	printf("%s\n", argv[4]);
-
-//    print_usage();
-    return 0;
+	
+	printf("%s\n", message);
+	return 0;
 }
